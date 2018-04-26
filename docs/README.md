@@ -12,29 +12,3 @@ features:
   details: VuePress 将每个页面生成为预渲染的静态 HTML，每个页面加载之后，然后作为单页面应用程序(SPA)运行。
 footer: by Drink
 ---
-
-# Introduction
-
-A blog 
-
-# Getting started
-
-```
-yarn install
-```
-
-
-# Dev
-
-```
-yarn run dev
-```
-
-# Build
-
-```
-yarn run build
-```
-
-# License
-MIT
