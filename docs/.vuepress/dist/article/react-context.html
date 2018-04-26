@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>React中context的使用 | React中context的使用</title>
+    <meta name="description" content="Learn young, learn fair.">
+    
+    
+    <link rel="preload" href="/assets/css/5.styles.cc10635c.css" as="style"><link rel="preload" href="/assets/js/app.66452452.js" as="script"><link rel="preload" href="/assets/js/1.d45aaadf.js" as="script"><link rel="prefetch" href="/assets/js/0.f6a8eb85.js"><link rel="prefetch" href="/assets/js/2.1076ccb5.js"><link rel="prefetch" href="/assets/js/3.b9a54386.js"><link rel="prefetch" href="/assets/js/4.c197f59c.js">
+    <link rel="stylesheet" href="/assets/css/5.styles.cc10635c.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div><a href="/" class="home-link router-link-active"><!----><span class="site-name">
+      React中context的使用
+    </span></a><div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""><!----></div><nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link">Home</a></div><div class="nav-item"><a href="/article/" class="nav-link router-link-active">Article</a></div><div class="nav-item"><a href="/about/" class="nav-link">About me</a></div><a href="https://github.com/drinksong/blog" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav></div></header><div class="sidebar-mask"></div><div class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link">Home</a></div><div class="nav-item"><a href="/article/" class="nav-link router-link-active">Article</a></div><div class="nav-item"><a href="/about/" class="nav-link">About me</a></div><a href="https://github.com/drinksong/blog" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav><ul class="sidebar-links"><li><a href="/article/" class="sidebar-link">目录</a></li><li><a href="/article/react-context.html" class="active sidebar-link">React中context的使用</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/article/react-context.html#什么是context" class="sidebar-link">什么是context</a></li><li class="sidebar-sub-header"><a href="/article/react-context.html#实例" class="sidebar-link">实例</a></li><li class="sidebar-sub-header"><a href="/article/react-context.html#使用方法" class="sidebar-link">使用方法</a></li><li class="sidebar-sub-header"><a href="/article/react-context.html#相关api" class="sidebar-link">相关api</a></li></ul></li><li><a href="/article/react-hoc.html" class="sidebar-link">React高阶组件</a></li></ul></div><div class="page"><div class="content"><blockquote><p>重要声明：context 相关内容在将来仍有可能会发生变动，所以不建议使用在生产环境中。</p></blockquote><h2 id="什么是context"><a href="#什么是context" aria-hidden="true" class="header-anchor">#</a> 什么是context</h2><p>在 React 中，通过你的 React 组件很容易追踪数据流。但你察看一个组件时，你可以找出哪些属性(props)被传递，这使得你的应用非常容易理解。</p><p>在某些场景下，你想在整个组件树中传递数据，但却不想手动地在每一层传递属性。你可以直接在 React 中使用强大的”context” API解决上述问题。</p><h2 id="实例"><a href="#实例" aria-hidden="true" class="header-anchor">#</a> 实例</h2><pre class="language-javascript"><code><span class="token keyword">import</span> ReactDOM <span class="token keyword">from</span> <span class="token string">'react-dom'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> React <span class="token keyword">from</span> <span class="token string">'react'</span>
+
+<span class="token comment">// Children component</span>
+<span class="token keyword">class</span> <span class="token class-name">Children</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">constructor</span><span class="token punctuation">(</span>props<span class="token punctuation">,</span> context<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">super</span><span class="token punctuation">(</span>props<span class="token punctuation">,</span> context<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">this</span><span class="token punctuation">.</span>state <span class="token operator">=</span> <span class="token punctuation">{</span>
+      name<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>context<span class="token punctuation">.</span>name
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span><span class="token punctuation">(</span>
+      <span class="token operator">&lt;</span>ul<span class="token operator">&gt;</span>
+        <span class="token operator">&lt;</span>li<span class="token operator">&gt;</span>
+          <span class="token punctuation">{</span><span class="token template-string"><span class="token string">`child context is: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>context<span class="token punctuation">.</span>age<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span><span class="token punctuation">}</span> <span class="token comment">// child context is: 18</span>
+        <span class="token operator">&lt;</span><span class="token operator">/</span>li<span class="token operator">&gt;</span>
+        <span class="token operator">&lt;</span>li<span class="token operator">&gt;</span>
+          <span class="token punctuation">{</span><span class="token template-string"><span class="token string">`state from context: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>name<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span><span class="token punctuation">}</span> <span class="token comment">// state from context: mars</span>
+        <span class="token operator">&lt;</span><span class="token operator">/</span>li<span class="token operator">&gt;</span>
+        <span class="token operator">&lt;</span>li<span class="token operator">&gt;</span>
+          <span class="token punctuation">{</span><span class="token template-string"><span class="token string">`print age: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>context<span class="token punctuation">.</span><span class="token function">print</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>context<span class="token punctuation">.</span>age<span class="token punctuation">)</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span><span class="token punctuation">}</span> <span class="token comment">// print age: 18</span>
+        <span class="token operator">&lt;</span><span class="token operator">/</span>li<span class="token operator">&gt;</span>
+      <span class="token operator">&lt;</span><span class="token operator">/</span>ul<span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+Children<span class="token punctuation">.</span>contextTypes <span class="token operator">=</span> <span class="token punctuation">{</span>
+  name<span class="token punctuation">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span>string<span class="token punctuation">,</span>
+  age<span class="token punctuation">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span>number<span class="token punctuation">,</span>
+  print<span class="token punctuation">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span>func
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+
+<span class="token comment">// Parent component</span>
+<span class="token keyword">class</span> <span class="token class-name">Parent</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">getChildContext</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      name<span class="token punctuation">:</span> <span class="token string">'mars'</span><span class="token punctuation">,</span>
+      age<span class="token punctuation">:</span> <span class="token number">18</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      <span class="token operator">&lt;</span>div<span class="token operator">&gt;</span>
+        <span class="token punctuation">{</span><span class="token template-string"><span class="token string">`from App component: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>context<span class="token punctuation">.</span>name<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span><span class="token punctuation">}</span> <span class="token comment">// from App component: bruno</span>
+        <span class="token operator">&lt;</span>div<span class="token operator">&gt;</span>
+          <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>children<span class="token punctuation">}</span>
+        <span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">&gt;</span>
+      <span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+Parent<span class="token punctuation">.</span>contextTypes <span class="token operator">=</span> <span class="token punctuation">{</span>
+  name<span class="token punctuation">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span>string
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+Parent<span class="token punctuation">.</span>childContextTypes <span class="token operator">=</span> <span class="token punctuation">{</span>
+  age<span class="token punctuation">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span>number<span class="token punctuation">,</span>
+  name<span class="token punctuation">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span>string
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token comment">// App component</span>
+<span class="token keyword">class</span> <span class="token class-name">App</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">getChildContext</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span> 
+        name<span class="token punctuation">:</span> <span class="token string">'mars'</span><span class="token punctuation">,</span>
+        print<span class="token punctuation">:</span> <span class="token punctuation">(</span>m<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> m
+     <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      <span class="token operator">&lt;</span>Parent<span class="token operator">&gt;</span>
+        <span class="token operator">&lt;</span>Children <span class="token operator">/</span><span class="token operator">&gt;</span>
+      <span class="token operator">&lt;</span><span class="token operator">/</span>Parent<span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+App<span class="token punctuation">.</span>childContextTypes <span class="token operator">=</span> <span class="token punctuation">{</span>
+  name<span class="token punctuation">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span>string<span class="token punctuation">,</span>
+  print<span class="token punctuation">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span>func
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+ReactDOM<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span><span class="token operator">&lt;</span>App <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">,</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">'app'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre><p>在上面的例子中，我们可以看到在<code>App</code>组件中声明的<code>print</code>方法并没有通过<code>Parent</code>传递，而是通过<code>context</code>直接传递给了<code>Children</code>，这大大方便了我们传值的操作，不再需要一遍一遍地写<code>print={this.props.print}</code>。但同时，我们也需要注意，不要将所有东西都绑定在<code>context</code>上，而是只在必要时使用<code>context</code>，毕竟全局变量很危险。</p><h2 id="使用方法"><a href="#使用方法" aria-hidden="true" class="header-anchor">#</a> 使用方法</h2><p>使用<code>getChildContext</code>方法将属性传递给子组件，并使用<code>childContextTypes</code>声明传递数据类型，子组件中需要显式地使用<code>contextTypes</code>声明需要用到的属性的数据类型。</p><p>需要传递进<code>context</code>参数才可以在<code>constructor</code>方法中使用<code>context</code>，要不然React将会报错。</p><p>在组件中，通过<code>this.context</code>访问<code>context</code>中的属性或方法。</p><h2 id="相关api"><a href="#相关api" aria-hidden="true" class="header-anchor">#</a> 相关api</h2><ul><li><p>contextTypes
+当需要在当前组件使用从上级组件传入的context的属性时，需要为用到的属性声明数据类型</p></li><li><p>childContextTypes
+声明传递给子组件的属性的数据类型。</p></li><li><p>getChildContext
+设置传递给子组件的属性，可以覆盖，也可以新增。</p></li></ul></div><!----><div class="content page-nav"><p class="inner"><span class="prev">
+        ← <a href="/article/" class="prev router-link-active">
+          目录
+        </a></span><span class="next"><a href="/article/react-hoc.html">
+          React高阶组件
+        </a> →
+      </span></p></div></div></div></div>
+    <script src="/assets/js/1.d45aaadf.js" defer></script><script src="/assets/js/app.66452452.js" defer></script>
+  </body>
+</html>
