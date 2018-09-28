@@ -2,7 +2,7 @@ module.exports = {
     // base: '/blog/'
     title: 'Drink`s blog',
     description: 'Learn young, learn fair.',
-    base: '/blog',
+    base: '/blog/',
     themeConfig: {
         // 假定 GitHub。也可以是一个完整的 GitLab 网址
         repo: 'https://github.com/drinksong/blog',
@@ -24,7 +24,8 @@ module.exports = {
             '/article/': [
                 '',
                 'react-context',
-                'react-hoc'
+                'react-hoc',
+                'shell-tut'
             ]
         }
     }
