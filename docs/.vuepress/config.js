@@ -24,7 +24,8 @@ module.exports = {
                 '',
                 'react-context',
                 'react-hoc',
-                'shell-tut'
+                'react-component',
+                'shell-tut',
             ]
         }
     }
