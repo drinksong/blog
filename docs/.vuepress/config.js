@@ -25,6 +25,7 @@ module.exports = {
                 'react-context',
                 'react-hoc',
                 'react-component',
+                'babel-plugin',
                 'shell-tut',
             ]
         }
