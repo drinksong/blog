@@ -26,6 +26,7 @@ module.exports = {
                 'react-hoc',
                 'react-component',
                 'babel-plugin',
+                'parcel-react',
                 'shell-tut',
             ]
         }
