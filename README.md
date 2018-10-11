@@ -29,6 +29,7 @@ yarn run build
 # Some reprint
 
 [精读前后端渲染之争](https://github.com/drinksong/blog/issues/1)
+[移动端适配方案](https://github.com/drinksong/blog/issues/2)
 
 # License
 MIT
