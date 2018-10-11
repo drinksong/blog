@@ -52,7 +52,7 @@ category: Javascript
           "@babel/preset-env",
           {
             "debug": true,
-            "useBuiltIns": "entry"
+            "useBuiltIns": "usage"
           }
         ],
         "@babel/preset-react"
@@ -61,12 +61,6 @@ category: Javascript
         "@babel/plugin-proposal-class-properties"
       ]
     }
-    ```
-    
-    useBuiltIns开启后可以实现polyfill的按需加载，当然同样是需要引入polyfill
-    
-    ```javascript
-    import '@babel/polyfill';
     ```
     
     polyfill的按需加载还可以通过@babel/plugin-transform-runtime，具体可以查看[这篇文章](/article/babel-plugin.html)。

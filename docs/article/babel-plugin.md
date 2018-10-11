@@ -6,7 +6,7 @@ category: Javascript
 
 > 在项目开发过程中，我们往往需要引入babel来解决代码兼容性的问题。目前有三种方式，分别是`babel-polyfill`，`babel-runtime`和`babel-preset-env`，那么这三种方式有什么区别，结合webpack打包出来的效果哪种比较优呢，下面我们来对比一下。
   
-# 准备工作
+## 准备工作
 
 开始对比之前，我们需要初始化一个webpack项目
 
@@ -129,7 +129,7 @@ console.log(Object.values({ 1: 2 }));
 console.log(Array.isArray([]));
 ```
 
-# babel-polyfill
+## babel-polyfill
 
 babel-polyfill 是为了模拟一个完整的ES2015+环境，旨在用于应用程序而不是库/工具。并且使用babel-node时，这个polyfill会自动加载。这里要注意的是babel-polyfill是一次性引入你的项目中的，并且同项目代码一起编译到生产环境。而且会污染全局变量。像Map，Array.prototype.find这些就存在于全局空间中。
 
@@ -156,7 +156,7 @@ npm run start
 打包出来的bundle.js的文件大小为259K，而加入babel-polyfill之前的包的大小仅为4K，体积大了许多。
 那么我们能不能做到按需引用babel-polyfill，从而减小包的大小呢？答案是可以的，这就要靠babel-runtime来实现了。
 
-# babel-runtime
+## babel-runtime
 
 babel-runtime不会污染全局空间和内置对象原型。事实上babel-runtime是一个模块，你可以把它作为依赖来达成ES2015的支持。
 
@@ -189,7 +189,7 @@ npm install --save-dev babel-plugin-transform-runtime
 
 执行打包命令，打包出来的bundle.js的大小为63K，比完整引入polyfill小了好多。但是事物都有两面性，babel-runtime有个缺点，它不模拟实例方法，即内置对象原型上的方法，所以类似Array.prototype.find，你通过babel-runtime是无法使用的，这只能通过 babel-polyfill 来转码，因为 babel-polyfill 是直接在原型链上增加方法。这就悲催了，难道还是要完整引入babel-polyfill?其实还有一个解决的办法，就是用babel-preset-env
 
-# babel-preset-env
+## babel-preset-env
 
 babel-preset-env 能根据当前的运行环境，自动确定你需要的 plugins 和 polyfills。通过各个 es标准 feature 在不同浏览器以及 node 版本的支持情况，再去维护一个 feature 跟 plugins 之间的映射关系，最终确定需要的 plugins。关于详细的配置说明，请[点击这里](https://github.com/babel/babel/tree/master/packages/babel-preset-env#examples)
 
@@ -211,28 +211,540 @@ babel-preset-env 能根据当前的运行环境，自动确定你需要的 plugi
 }
 ```
 
-其中的useBuiltIns就是是否开启自动支持 polyfill，它能自动给每个文件添加其需要的poly-fill。 我们来尝试一下，main.js中映入babel-polyfill
+其中useBuiltins值有三个，分别是：
+
+- usage（推荐）: 仅加载代码中用到的polyfill
+- entry: 仅引入有浏览器不支持的polyfill
+- false: 不对polyfill做任何操作
+
+### 实践
+
+首先构造一个js文件test.js
 
 ```javascript
-require('babel-polyfill')
+var a = new Map();
+var b = Promise.resolve();
+
+Object.assign({}, {1: 1});
+"foobar".includes("foo");
 ```
 
-你没看错，是要在main.js中引入，直接在webpack中配置貌似是不行的。
+#### usage
 
-执行打包命令后，bundle.js的大小为194K，对比之下还是要小了些的。
-
-如果此时在浏览器中打开页面，会发现有报错
-
-这个问题的原因及解决方案请点击[这里](https://github.com/babel/babel/issues/5500)，我们修改一下babel-polyfill的引入方式，require 改为 import，将引入提升到前面
+用babel进行编译，结果如下：
 
 ```javascript
- - require('babel-polyfill')
- + import 'babel-polyfill'
+/*
+Added following polyfills:
+es6.map {}
+es6.string.iterator {}
+es6.array.iterator {}
+web.dom.iterable {}
+es6.promise {}
+es6.object.assign {}
+es6.string.includes {}
+es7.array.includes {}
+*/
+
+"use strict";
+
+require("core-js/modules/es7.array.includes");
+
+require("core-js/modules/es6.string.includes");
+
+require("core-js/modules/es6.object.assign");
+
+require("core-js/modules/es6.promise");
+
+require("core-js/modules/web.dom.iterable");
+
+require("core-js/modules/es6.array.iterator");
+
+require("core-js/modules/es6.string.iterator");
+
+require("core-js/modules/es6.map");
+
+// import '@babel/polyfill';
+var a = new Map();
+var b = Promise.resolve();
+Object.assign({}, {
+  1: 1
+});
+"foobar".includes("foo");
+
 ```
 
-再次打包后即可
+#### entry
 
-# 总结
+这种配置下需要在头部引入polyfill
+
+```javascript
+import '@babel/polyfill';
+
+var a = new Map();
+var b = Promise.resolve();
+
+Object.assign({}, {1: 1});
+"foobar".includes("foo");
+```
+
+使用babel编译结果如下：
+
+```javascript
+
+/*
+Replaced `@babel/polyfill` with the following polyfills:
+es6.array.copy-within {}
+es6.array.every {}
+es6.array.fill {}
+es6.array.filter {}
+es6.array.find {}
+es6.array.find-index {}
+es6.array.for-each {}
+es6.array.from {}
+es7.array.includes {}
+es6.array.index-of {}
+es6.array.is-array {}
+es6.array.iterator {}
+es6.array.last-index-of {}
+es6.array.map {}
+es6.array.of {}
+es6.array.reduce {}
+es6.array.reduce-right {}
+es6.array.some {}
+es6.array.sort {}
+es6.array.species {}
+es6.date.now {}
+es6.date.to-iso-string {}
+es6.date.to-json {}
+es6.date.to-primitive {}
+es6.date.to-string {}
+es6.function.bind {}
+es6.function.has-instance {}
+es6.function.name {}
+es6.map {}
+es6.math.acosh {}
+es6.math.asinh {}
+es6.math.atanh {}
+es6.math.cbrt {}
+es6.math.clz32 {}
+es6.math.cosh {}
+es6.math.expm1 {}
+es6.math.fround {}
+es6.math.hypot {}
+es6.math.imul {}
+es6.math.log1p {}
+es6.math.log10 {}
+es6.math.log2 {}
+es6.math.sign {}
+es6.math.sinh {}
+es6.math.tanh {}
+es6.math.trunc {}
+es6.number.constructor {}
+es6.number.epsilon {}
+es6.number.is-finite {}
+es6.number.is-integer {}
+es6.number.is-nan {}
+es6.number.is-safe-integer {}
+es6.number.max-safe-integer {}
+es6.number.min-safe-integer {}
+es6.number.parse-float {}
+es6.number.parse-int {}
+es6.object.assign {}
+es6.object.create {}
+es7.object.define-getter {}
+es7.object.define-setter {}
+es6.object.define-property {}
+es6.object.define-properties {}
+es7.object.entries {}
+es6.object.freeze {}
+es6.object.get-own-property-descriptor {}
+es7.object.get-own-property-descriptors {}
+es6.object.get-own-property-names {}
+es6.object.get-prototype-of {}
+es7.object.lookup-getter {}
+es7.object.lookup-setter {}
+es6.object.prevent-extensions {}
+es6.object.is {}
+es6.object.is-frozen {}
+es6.object.is-sealed {}
+es6.object.is-extensible {}
+es6.object.keys {}
+es6.object.seal {}
+es6.object.set-prototype-of {}
+es7.object.values {}
+es6.promise {}
+es7.promise.finally {}
+es6.reflect.apply {}
+es6.reflect.construct {}
+es6.reflect.define-property {}
+es6.reflect.delete-property {}
+es6.reflect.get {}
+es6.reflect.get-own-property-descriptor {}
+es6.reflect.get-prototype-of {}
+es6.reflect.has {}
+es6.reflect.is-extensible {}
+es6.reflect.own-keys {}
+es6.reflect.prevent-extensions {}
+es6.reflect.set {}
+es6.reflect.set-prototype-of {}
+es6.regexp.constructor {}
+es6.regexp.flags {}
+es6.regexp.match {}
+es6.regexp.replace {}
+es6.regexp.split {}
+es6.regexp.search {}
+es6.regexp.to-string {}
+es6.set {}
+es6.symbol {}
+es7.symbol.async-iterator {}
+es6.string.anchor {}
+es6.string.big {}
+es6.string.blink {}
+es6.string.bold {}
+es6.string.code-point-at {}
+es6.string.ends-with {}
+es6.string.fixed {}
+es6.string.fontcolor {}
+es6.string.fontsize {}
+es6.string.from-code-point {}
+es6.string.includes {}
+es6.string.italics {}
+es6.string.iterator {}
+es6.string.link {}
+es7.string.pad-start {}
+es7.string.pad-end {}
+es6.string.raw {}
+es6.string.repeat {}
+es6.string.small {}
+es6.string.starts-with {}
+es6.string.strike {}
+es6.string.sub {}
+es6.string.sup {}
+es6.string.trim {}
+es6.typed.array-buffer {}
+es6.typed.data-view {}
+es6.typed.int8-array {}
+es6.typed.uint8-array {}
+es6.typed.uint8-clamped-array {}
+es6.typed.int16-array {}
+es6.typed.uint16-array {}
+es6.typed.int32-array {}
+es6.typed.uint32-array {}
+es6.typed.float32-array {}
+es6.typed.float64-array {}
+es6.weak-map {}
+es6.weak-set {}
+web.timers {}
+web.immediate {}
+web.dom.iterable {}
+
+*/
+
+"use strict";
+
+require("core-js/modules/es6.array.copy-within");
+
+require("core-js/modules/es6.array.every");
+
+require("core-js/modules/es6.array.fill");
+
+require("core-js/modules/es6.array.filter");
+
+require("core-js/modules/es6.array.find");
+
+require("core-js/modules/es6.array.find-index");
+
+require("core-js/modules/es6.array.for-each");
+
+require("core-js/modules/es6.array.from");
+
+require("core-js/modules/es7.array.includes");
+
+require("core-js/modules/es6.array.index-of");
+
+require("core-js/modules/es6.array.is-array");
+
+require("core-js/modules/es6.array.iterator");
+
+require("core-js/modules/es6.array.last-index-of");
+
+require("core-js/modules/es6.array.map");
+
+require("core-js/modules/es6.array.of");
+
+require("core-js/modules/es6.array.reduce");
+
+require("core-js/modules/es6.array.reduce-right");
+
+require("core-js/modules/es6.array.some");
+
+require("core-js/modules/es6.array.sort");
+
+require("core-js/modules/es6.array.species");
+
+require("core-js/modules/es6.date.now");
+
+require("core-js/modules/es6.date.to-iso-string");
+
+require("core-js/modules/es6.date.to-json");
+
+require("core-js/modules/es6.date.to-primitive");
+
+require("core-js/modules/es6.date.to-string");
+
+require("core-js/modules/es6.function.bind");
+
+require("core-js/modules/es6.function.has-instance");
+
+require("core-js/modules/es6.function.name");
+
+require("core-js/modules/es6.map");
+
+require("core-js/modules/es6.math.acosh");
+
+require("core-js/modules/es6.math.asinh");
+
+require("core-js/modules/es6.math.atanh");
+
+require("core-js/modules/es6.math.cbrt");
+
+require("core-js/modules/es6.math.clz32");
+
+require("core-js/modules/es6.math.cosh");
+
+require("core-js/modules/es6.math.expm1");
+
+require("core-js/modules/es6.math.fround");
+
+require("core-js/modules/es6.math.hypot");
+
+require("core-js/modules/es6.math.imul");
+
+require("core-js/modules/es6.math.log1p");
+
+require("core-js/modules/es6.math.log10");
+
+require("core-js/modules/es6.math.log2");
+
+require("core-js/modules/es6.math.sign");
+
+require("core-js/modules/es6.math.sinh");
+
+require("core-js/modules/es6.math.tanh");
+
+require("core-js/modules/es6.math.trunc");
+
+require("core-js/modules/es6.number.constructor");
+
+require("core-js/modules/es6.number.epsilon");
+
+require("core-js/modules/es6.number.is-finite");
+
+require("core-js/modules/es6.number.is-integer");
+
+require("core-js/modules/es6.number.is-nan");
+
+require("core-js/modules/es6.number.is-safe-integer");
+
+require("core-js/modules/es6.number.max-safe-integer");
+
+require("core-js/modules/es6.number.min-safe-integer");
+
+require("core-js/modules/es6.number.parse-float");
+
+require("core-js/modules/es6.number.parse-int");
+
+require("core-js/modules/es6.object.assign");
+
+require("core-js/modules/es6.object.create");
+
+require("core-js/modules/es7.object.define-getter");
+
+require("core-js/modules/es7.object.define-setter");
+
+require("core-js/modules/es6.object.define-property");
+
+require("core-js/modules/es6.object.define-properties");
+
+require("core-js/modules/es7.object.entries");
+
+require("core-js/modules/es6.object.freeze");
+
+require("core-js/modules/es6.object.get-own-property-descriptor");
+
+require("core-js/modules/es7.object.get-own-property-descriptors");
+
+require("core-js/modules/es6.object.get-own-property-names");
+
+require("core-js/modules/es6.object.get-prototype-of");
+
+require("core-js/modules/es7.object.lookup-getter");
+
+require("core-js/modules/es7.object.lookup-setter");
+
+require("core-js/modules/es6.object.prevent-extensions");
+
+require("core-js/modules/es6.object.is");
+
+require("core-js/modules/es6.object.is-frozen");
+
+require("core-js/modules/es6.object.is-sealed");
+
+require("core-js/modules/es6.object.is-extensible");
+
+require("core-js/modules/es6.object.keys");
+
+require("core-js/modules/es6.object.seal");
+
+require("core-js/modules/es6.object.set-prototype-of");
+
+require("core-js/modules/es7.object.values");
+
+require("core-js/modules/es6.promise");
+
+require("core-js/modules/es7.promise.finally");
+
+require("core-js/modules/es6.reflect.apply");
+
+require("core-js/modules/es6.reflect.construct");
+
+require("core-js/modules/es6.reflect.define-property");
+
+require("core-js/modules/es6.reflect.delete-property");
+
+require("core-js/modules/es6.reflect.get");
+
+require("core-js/modules/es6.reflect.get-own-property-descriptor");
+
+require("core-js/modules/es6.reflect.get-prototype-of");
+
+require("core-js/modules/es6.reflect.has");
+
+require("core-js/modules/es6.reflect.is-extensible");
+
+require("core-js/modules/es6.reflect.own-keys");
+
+require("core-js/modules/es6.reflect.prevent-extensions");
+
+require("core-js/modules/es6.reflect.set");
+
+require("core-js/modules/es6.reflect.set-prototype-of");
+
+require("core-js/modules/es6.regexp.constructor");
+
+require("core-js/modules/es6.regexp.flags");
+
+require("core-js/modules/es6.regexp.match");
+
+require("core-js/modules/es6.regexp.replace");
+
+require("core-js/modules/es6.regexp.split");
+
+require("core-js/modules/es6.regexp.search");
+
+require("core-js/modules/es6.regexp.to-string");
+
+require("core-js/modules/es6.set");
+
+require("core-js/modules/es6.symbol");
+
+require("core-js/modules/es7.symbol.async-iterator");
+
+require("core-js/modules/es6.string.anchor");
+
+require("core-js/modules/es6.string.big");
+
+require("core-js/modules/es6.string.blink");
+
+require("core-js/modules/es6.string.bold");
+
+require("core-js/modules/es6.string.code-point-at");
+
+require("core-js/modules/es6.string.ends-with");
+
+require("core-js/modules/es6.string.fixed");
+
+require("core-js/modules/es6.string.fontcolor");
+
+require("core-js/modules/es6.string.fontsize");
+
+require("core-js/modules/es6.string.from-code-point");
+
+require("core-js/modules/es6.string.includes");
+
+require("core-js/modules/es6.string.italics");
+
+require("core-js/modules/es6.string.iterator");
+
+require("core-js/modules/es6.string.link");
+
+require("core-js/modules/es7.string.pad-start");
+
+require("core-js/modules/es7.string.pad-end");
+
+require("core-js/modules/es6.string.raw");
+
+require("core-js/modules/es6.string.repeat");
+
+require("core-js/modules/es6.string.small");
+
+require("core-js/modules/es6.string.starts-with");
+
+require("core-js/modules/es6.string.strike");
+
+require("core-js/modules/es6.string.sub");
+
+require("core-js/modules/es6.string.sup");
+
+require("core-js/modules/es6.string.trim");
+
+require("core-js/modules/es6.typed.array-buffer");
+
+require("core-js/modules/es6.typed.data-view");
+
+require("core-js/modules/es6.typed.int8-array");
+
+require("core-js/modules/es6.typed.uint8-array");
+
+require("core-js/modules/es6.typed.uint8-clamped-array");
+
+require("core-js/modules/es6.typed.int16-array");
+
+require("core-js/modules/es6.typed.uint16-array");
+
+require("core-js/modules/es6.typed.int32-array");
+
+require("core-js/modules/es6.typed.uint32-array");
+
+require("core-js/modules/es6.typed.float32-array");
+
+require("core-js/modules/es6.typed.float64-array");
+
+require("core-js/modules/es6.weak-map");
+
+require("core-js/modules/es6.weak-set");
+
+require("core-js/modules/web.timers");
+
+require("core-js/modules/web.immediate");
+
+require("core-js/modules/web.dom.iterable");
+
+require("regenerator-runtime/runtime");
+
+var a = new Map();
+var b = Promise.resolve();
+Object.assign({}, {
+  1: 1
+});
+"foobar".includes("foo");
+
+````
+
+可以看到，这种情况下会引入很多没有用到的polyfill。
+
+## 总结
 
 |方案|打包后大小|优点|缺点|
 |--|--|--|--|
